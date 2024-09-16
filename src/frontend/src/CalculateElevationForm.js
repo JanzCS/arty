@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-let base_url = document.location.hostname + ":8000"
-
 function CalculateElevationForm() {
     const [mortarEasting, setMortarEasting] = useState(0);
     const [mortarNorthing, setMortarNorthing] = useState(0);
@@ -36,7 +34,7 @@ function CalculateElevationForm() {
 
 
         try {
-            const response = await axios.post("http://"+base_url+'/calculate_elevation', data);
+            const response = await axios.post('/api/calculate_elevation', data);
             console.log(response)
             setResult(response.data);
             setError(null);
