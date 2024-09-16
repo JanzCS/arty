@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.calculate import router as calculate_router  # Import the router
 
-app = FastAPI()
+app = FastAPI(root_path="/api")
 
 # CORS middleware to allow frontend React to communicate with FastAPI backend
 app.add_middleware(

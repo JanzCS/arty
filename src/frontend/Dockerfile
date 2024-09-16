@@ -15,7 +15,12 @@ COPY . /app/
 
 # Build production
 RUN npm run build
-RUN npm install -g serve
 
-## Start the app on port 3006
-CMD serve -s build -l 3006
+FROM nginx:latest as prod
+
+COPY --from=build /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80/tcp
+
+CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
