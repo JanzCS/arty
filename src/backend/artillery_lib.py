@@ -202,7 +202,7 @@ def azimuth_from_observer_relative(
     )
 
     return (
-        azimuth_from_grids(mortar_pos, enemy_pos),
+        round(azimuth_from_grids(mortar_pos, enemy_pos), 0),
         distance,
     )
 
