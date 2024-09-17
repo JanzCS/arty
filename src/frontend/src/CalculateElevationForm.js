@@ -78,7 +78,7 @@ function CalculateElevationForm() {
                     </Stack>
                     <Stack alignItems="flex-start" direction="column">
                         <label>Observer Easting</label>
-                        <InputNumber osize="sm" nChange={setObserverEasting} required />
+                        <InputNumber osize="sm" onChange={setObserverEasting} required />
                     </Stack>
                     <Stack alignItems="flex-start" direction="column">
                         <label>Observer Northing</label>
