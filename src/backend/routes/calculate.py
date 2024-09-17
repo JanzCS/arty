@@ -28,9 +28,9 @@ class CalculationRequest(BaseModel):
 def calculate_elevation_endpoint(request: CalculationRequest):
     # Map artillery string to Artillery object
     artillery_mapping = {
-        "m252": Artillery(0.25, 0.00031, 375, True),
-        "m119": Artillery(23, 0.0043, 212.5, False),
-        "t2s1": Artillery(21.76, 0.00647, 690, False),
+        "m252": Artillery("m252", 0.25, 0.00031, 375, True),
+        "m119": Artillery("m119", 23, 0.0043, 212.5, False),
+        "t2s1": Artillery("t2s1", 21.76, 0.00647, 690, False),
     }
 
     artillery = artillery_mapping.get(request.artillery)

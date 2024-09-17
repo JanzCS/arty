@@ -13,7 +13,8 @@ class Artillery:
         high_angle (bool): Whether the artillery shoots > 45 deg or below
     """
 
-    def __init__(self, mass, air_drag, initial_velocity, high_angle):
+    def __init__(self, name, mass, air_drag, initial_velocity, high_angle):
+        self.name = name
         self.mass = mass
         self.air_drag = air_drag
         self.initial_velocity = initial_velocity
@@ -280,8 +281,11 @@ def calculate_elevation(artillery: Artillery, target_height: float, distance: fl
                 max_elevation = current_elevation
     if abs(current_distance - distance) > 0.5:
         return "Target unreachable."
+    elevation = round(math.radians(current_elevation), 0)
+    if artillery.name == "m252":
+        elevation = elevation - 960
     return {
-        "elevation": round(current_elevation, 1),
+        "elevation": elevation,
         "time_to_impact": round(
             ballistic_sim(artillery, current_elevation, target_height)[1],
             1,

@@ -109,7 +109,7 @@ function CalculateElevationForm() {
                 <div className="mt-4">
                     <h2>Result</h2>
                     <p><strong>Azimuth:</strong> {result.azimuth} degrees</p>
-                    <p><strong>Elevation:</strong> {result.elevation} degrees</p>
+                    <p><strong>Elevation:</strong> {result.elevation} miliradians + offset</p>
                     <p><strong>Time to Impact:</strong> {result.time_to_impact} seconds</p>
                 </div>
             )}
