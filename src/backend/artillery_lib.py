@@ -281,7 +281,7 @@ def calculate_elevation(artillery: Artillery, target_height: float, distance: fl
                 max_elevation = current_elevation
     if abs(current_distance - distance) > 0.5:
         return "Target unreachable."
-    elevation = round(math.radians(current_elevation), 0)
+    elevation = round(math.radians(current_elevation) * 1000, 2)
     if artillery.name == "m252":
         elevation = elevation - 960
     return {
