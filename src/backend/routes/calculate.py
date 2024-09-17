@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-import math
 from backend.artillery_lib import (
     Artillery,
     GridCoord,
@@ -59,8 +58,8 @@ def calculate_elevation_endpoint(request: CalculationRequest):
     )
 
     result = {
-        "azimuth": math.round(mortar_to_enemy_azimuth, 2),
-        "elevation": math.round(ce_result["elevation"], 0),
+        "azimuth": round(mortar_to_enemy_azimuth, 2),
+        "elevation": round(ce_result["elevation"], 0),
         "time_to_impact": ce_result["time_to_impact"],
     }
 
