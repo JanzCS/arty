@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Button, Heading, InputNumber, InputPicker, Stack } from 'rsuite';
+import Column from 'rsuite/esm/Table/TableColumn';
 
 function CalculateElevationForm() {
     const [mortarEasting, setMortarEasting] = useState(0);
@@ -15,6 +17,7 @@ function CalculateElevationForm() {
 
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -32,7 +35,7 @@ function CalculateElevationForm() {
             artillery: artillery
         };
 
-
+        setLoading(true)
         try {
             const response = await axios.post('/api/calculate_elevation', data);
             console.log(response)
@@ -41,128 +44,66 @@ function CalculateElevationForm() {
         } catch (err) {
             setError('Error calculating elevation.');
             setResult(null);
+        } finally {
+            setLoading(false)
         }
     };
 
+    const artilleryOptions = [
+        { "label": "M252", "value": "m252" },
+        { "label": "M119", "value": "m119" },
+        { "label": "2S1", "value": "t2s1" }
+    ]
+
     return (
-        <div className="container mt-5">
-            <h1>Calculate Elevation</h1>
+        <>
+            <Heading level={1} style={{textAlign: "center"}}>WCS Artillery Calculator</Heading>
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="artillery">Artillery</label>
-                    <select
-                        className="form-control"
-                        id="artillery"
-                        value={artillery}
-                        onChange={(e) => setArtillery(e.target.value)}
-                    >
-                        <option value="m252">M252</option>
-                        <option value="m119">M119</option>
-                        <option value="t2s1">2S1</option>
-                    </select>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="mortarEasting">Mortar Easting</label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="mortarEasting"
-                        value={mortarEasting}
-                        onChange={(e) => setMortarEasting(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="mortarNorthing">Mortar Northing</label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="mortarNorthing"
-                        value={mortarNorthing}
-                        onChange={(e) => setMortarNorthing(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="mortarHeight">Mortar Height</label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="mortarHeight"
-                        value={mortarHeight}
-                        onChange={(e) => setMortarHeight(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="observerEasting">Observer Easting</label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="observerEasting"
-                        value={observerEasting}
-                        onChange={(e) => setObserverEasting(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="observerNorthing">Observer Northing</label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="observerNorthing"
-                        value={observerNorthing}
-                        onChange={(e) => setObserverNorthing(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="observerHeight">Observer Height</label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="observerHeight"
-                        value={observerHeight}
-                        onChange={(e) => setObserverHeight(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="observerToEnemyAzimuth">Observer to Enemy Azimuth</label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="observerToEnemyAzimuth"
-                        value={observerToEnemyAzimuth}
-                        onChange={(e) => setObserverToEnemyAzimuth(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="observerToEnemyHorizontal">Observer to Enemy Horizontal</label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="observerToEnemyHorizontal"
-                        value={observerToEnemyHorizontal}
-                        onChange={(e) => setObserverToEnemyHorizontal(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="observerToEnemyVertical">Observer to Enemy Vertical</label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="observerToEnemyVertical"
-                        value={observerToEnemyVertical}
-                        onChange={(e) => setObserverToEnemyVertical(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit" className="btn btn-primary">
-                    Calculate
-                </button>
+                <Stack spacing={10} direction="column">
+                    <Stack alignItems="flex-start" direction="column">
+                        <label>Artillery</label>
+                        <InputPicker size="sm" value={artillery} data={artilleryOptions} onChange={(e) => setArtillery(e)} required />
+                    </Stack>
+                    <Stack alignItems="flex-start" direction="column">
+                        <label>Mortar Easting</label>
+                        <InputNumber size="sm" onChange={(e) => setMortarEasting(e)} required />
+                    </Stack>
+                    <Stack alignItems="flex-start" direction="column">
+                        <label>Morter Northing</label>
+                        <InputNumber size="sm" onChange={setMortarNorthing} required />
+                    </Stack>
+                    <Stack alignItems="flex-start" direction="column">
+                        <label>Mortar Height</label>
+                        <InputNumber size="sm" onChange={setMortarHeight} required />
+                    </Stack>
+                    <Stack alignItems="flex-start" direction="column">
+                        <label>Observer Easting</label>
+                        <InputNumber osize="sm" nChange={setObserverEasting} required />
+                    </Stack>
+                    <Stack alignItems="flex-start" direction="column">
+                        <label>Observer Northing</label>
+                        <InputNumber size="sm" onChange={setObserverNorthing} required />
+                    </Stack>
+                    <Stack alignItems="flex-start" direction="column">
+                        <label>Observer Height</label>
+                        <InputNumber size="sm" onChange={setObserverHeight} required />
+                    </Stack>
+                    <Stack alignItems="flex-start" direction="column">
+                        <label>Observer to Enemy Azimuth</label>
+                        <InputNumber size="sm" onChange={setObserverToEnemyAzimuth} required />
+                    </Stack>
+                    <Stack alignItems="flex-start" direction="column">
+                        <label>Observer to Enemy Horizontal</label>
+                        <InputNumber size="sm" onChange={setObserverToEnemyHorizontal} required />
+                    </Stack>
+                    <Stack alignItems="flex-start" direction="column">
+                        <label>Observer to Enemy Vertical</label>
+                        <InputNumber size="sm" onChange={setObserverToEnemyVertical} required />
+                    </Stack>
+                    <Button type="submit" appearance="primary" disabled={loading}>
+                        {loading ? 'Calculating...' : 'Calculate'}
+                    </Button>
+                </Stack>
             </form>
             {result && (
                 <div className="mt-4">
@@ -177,7 +118,7 @@ function CalculateElevationForm() {
                     {error}
                 </div>
             )}
-        </div>
+        </>
     );
 }
 

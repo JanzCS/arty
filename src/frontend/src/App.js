@@ -1,4 +1,6 @@
 import CalculateElevationForm from './CalculateElevationForm';
+import { Button, CustomProvider } from 'rsuite';
+import 'rsuite/dist/rsuite.min.css';
 
 document.addEventListener("wheel", function(event){
     if(document.activeElement.type === "number"){
@@ -7,7 +9,11 @@ document.addEventListener("wheel", function(event){
 });
 
 function App() {
-  return <CalculateElevationForm/>
+  return (
+    <CustomProvider theme="dark">
+      <CalculateElevationForm/>
+    </CustomProvider>
+  )
 }
 
 export default App;
