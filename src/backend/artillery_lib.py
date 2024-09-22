@@ -33,6 +33,9 @@ class GridCoord:
         self.easting = easting
         self.northing = northing
 
+    def __str__(self):
+        return f"({self.easting}, {self.northing})"
+
 
 def deg2EL(degrees):
     """Converts degrees to mils elevation plus offset for m252 artillery.
@@ -120,8 +123,8 @@ def ballistic_sim(artillery, elevation, target_height):
         firing point.
 
     Returns:
-        tuple: The final x-position and time to reach it before the shell hits
-        the target or ground.
+        3-tuple: The final x-position, time to reach it before the shell hits
+        the target or ground, and maximum height of the trajectory.
     """
     delta_t = 0.001
     include_drag = True  # False to just use gravity
@@ -135,6 +138,7 @@ def ballistic_sim(artillery, elevation, target_height):
         [math.cos(math.radians(elevation)), math.sin(math.radians(elevation))]
     )
     last_valid_position = position
+    max_height_pos = last_valid_position
     while velocity[1] > 0 or position[1] > target_height:
         speed = np.linalg.norm(velocity)
         drag_speed = f * speed * speed / m
@@ -145,8 +149,10 @@ def ballistic_sim(artillery, elevation, target_height):
         velocity = velocity + deceleration * delta_t
         last_valid_position = position
         position = position + velocity * delta_t
+        if position[1] > max_height_pos[1]:
+            max_height_pos = position
         t = t + delta_t
-    return last_valid_position[0], t - delta_t
+    return last_valid_position[0], t - delta_t, max_height_pos[1]
 
 
 def azimuth_to_vert_angle(azimuth):
@@ -284,12 +290,11 @@ def calculate_elevation(artillery: Artillery, target_height: float, distance: fl
     elevation = math.radians(current_elevation) * 1000
     if artillery.name == "m252":
         elevation = elevation - 960
+    ballistic_sim_result = ballistic_sim(artillery, current_elevation, target_height)
     return {
         "elevation": elevation,
-        "time_to_impact": round(
-            ballistic_sim(artillery, current_elevation, target_height)[1],
-            1,
-        ),
+        "time_to_impact": round(ballistic_sim_result[1], 1),
+        "max_ord": round(ballistic_sim_result[2], 0),
     }
 
 
@@ -318,3 +323,26 @@ def generate_distance_elevation_table(artillery, distances):
             )
     except:
         return
+
+
+def calculate_adjusted_coordinates(
+    target_pos: GridCoord, correction: GridCoord, observer_to_enemy_azimuth: float
+):
+    if correction.easting > 0:
+        correction_direction = (observer_to_enemy_azimuth + 90) % 360
+    else:
+        correction_direction = (observer_to_enemy_azimuth - 90) % 360
+    correction_unit_vector = np.array([
+        math.cos(math.radians(azimuth_to_vert_angle(correction_direction))), math.sin(math.radians(azimuth_to_vert_angle(correction_direction)))
+    ])
+    azimuth_unit_vector = np.array([
+        math.cos(math.radians(azimuth_to_vert_angle(observer_to_enemy_azimuth))), math.sin(math.radians(azimuth_to_vert_angle(observer_to_enemy_azimuth)))
+    ])
+    correction_vector = correction_unit_vector * correction.easting
+    azimuth_vector = azimuth_unit_vector * correction.northing
+    total_adjustment_vector = correction_vector + azimuth_vector
+    adjusted_pos = GridCoord(
+        round(target_pos.easting + total_adjustment_vector[0], 0),
+        round(target_pos.northing + total_adjustment_vector[1], 0),
+    )
+    return adjusted_pos

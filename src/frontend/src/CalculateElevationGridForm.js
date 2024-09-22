@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Button, Heading, InputNumber, InputPicker, Stack } from 'rsuite';
-import Column from 'rsuite/esm/Table/TableColumn';
 
-function CalculateElevationForm() {
+function CalculateElevationPolarForm() {
     const [mortarEasting, setMortarEasting] = useState(0);
     const [mortarNorthing, setMortarNorthing] = useState(0);
     const [mortarHeight, setMortarHeight] = useState(0);
-    const [observerEasting, setObserverEasting] = useState(0);
-    const [observerNorthing, setObserverNorthing] = useState(0);
-    const [observerHeight, setObserverHeight] = useState(0);
     const [observerToEnemyAzimuth, setObserverToEnemyAzimuth] = useState(0);
-    const [observerToEnemyHorizontal, setObserverToEnemyHorizontal] = useState(0);
-    const [observerToEnemyVertical, setObserverToEnemyVertical] = useState(0);
+    const [enemyEasting, setEnemyEasting] = useState(0);
+    const [enemyNorthing, setEnemyNorthing] = useState(0);
+    const [enemyHeight, setEnemyHeight] = useState(0);
     const [artillery, setArtillery] = useState('m252');
 
     const [result, setResult] = useState(null);
@@ -26,18 +23,16 @@ function CalculateElevationForm() {
             mortar_easting: mortarEasting,
             mortar_northing: mortarNorthing,
             mortar_height: mortarHeight,
-            observer_easting: observerEasting,
-            observer_northing: observerNorthing,
-            observer_height: observerHeight,
             observer_to_enemy_azimuth: observerToEnemyAzimuth,
-            observer_to_enemy_horizontal: observerToEnemyHorizontal,
-            observer_to_enemy_vertical: observerToEnemyVertical,
+            enemy_easting: enemyEasting,
+            enemy_northing: enemyNorthing,
+            enemy_height: enemyHeight,
             artillery: artillery
         };
 
         setLoading(true)
         try {
-            const response = await axios.post('/api/calculate_elevation', data);
+            const response = await axios.post('/api/calculate_elevation_grid', data);
             console.log(response)
             setResult(response.data);
             setError(null);
@@ -77,28 +72,20 @@ function CalculateElevationForm() {
                         <InputNumber size="sm" onChange={setMortarHeight} required />
                     </Stack>
                     <Stack alignItems="flex-start" direction="column">
-                        <label>Observer Easting</label>
-                        <InputNumber osize="sm" onChange={setObserverEasting} required />
-                    </Stack>
-                    <Stack alignItems="flex-start" direction="column">
-                        <label>Observer Northing</label>
-                        <InputNumber size="sm" onChange={setObserverNorthing} required />
-                    </Stack>
-                    <Stack alignItems="flex-start" direction="column">
-                        <label>Observer Height</label>
-                        <InputNumber size="sm" onChange={setObserverHeight} required />
-                    </Stack>
-                    <Stack alignItems="flex-start" direction="column">
                         <label>Observer to Enemy Azimuth</label>
                         <InputNumber size="sm" onChange={setObserverToEnemyAzimuth} required />
                     </Stack>
                     <Stack alignItems="flex-start" direction="column">
-                        <label>Observer to Enemy Horizontal</label>
-                        <InputNumber size="sm" onChange={setObserverToEnemyHorizontal} required />
+                        <label>Enemy Easting</label>
+                        <InputNumber osize="sm" onChange={setEnemyEasting} required />
                     </Stack>
                     <Stack alignItems="flex-start" direction="column">
-                        <label>Observer to Enemy Vertical</label>
-                        <InputNumber size="sm" onChange={setObserverToEnemyVertical} required />
+                        <label>Enemy Northing</label>
+                        <InputNumber size="sm" onChange={setEnemyNorthing} required />
+                    </Stack>
+                    <Stack alignItems="flex-start" direction="column">
+                        <label>Enemy Height</label>
+                        <InputNumber size="sm" onChange={setEnemyHeight} required />
                     </Stack>
                     <Button type="submit" appearance="primary" disabled={loading}>
                         {loading ? 'Calculating...' : 'Calculate'}
@@ -111,6 +98,7 @@ function CalculateElevationForm() {
                     <p><strong>Azimuth:</strong> {result.azimuth} degrees</p>
                     <p><strong>Elevation:</strong> {result.elevation} miliradians + offset</p>
                     <p><strong>Time to Impact:</strong> {result.time_to_impact} seconds</p>
+                    <p><strong>Max Ord:</strong> {result.max_ord} m</p>
                 </div>
             )}
             {error && (
@@ -122,4 +110,4 @@ function CalculateElevationForm() {
     );
 }
 
-export default CalculateElevationForm;
+export default CalculateElevationPolarForm;
